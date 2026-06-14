@@ -1,0 +1,24 @@
+# Dev environment & version control
+.venv/
+venv/
+.git/
+.gitignore
+
+# Python caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Model weights - fetched from HF Hub at build time, never COPY'd
+*.keras
+*.h5
+
+# Dev/provenance - not needed in the runtime image
+scripts/
+tests/
+requirements-dev.txt
+*.ipynb
+
+# OS cruft
+.DS_Store
+Thumbs.db
