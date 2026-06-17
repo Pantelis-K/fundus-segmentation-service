@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Fundus CDR Demo</title>
+  </head>
+  <body>
+    <h1>Glaucoma Fundus Demo</h1>
+    <p>Upload an ROI-cropped fundus image, or click a sample, to get the
+       predicted cup/disc overlay and vertical CDR.</p>
+
+    <div>
+      <input type="file" id="fileInput">
+      <button id="predictBtn">Predict</button>
+    </div>
+
+    <p>Or try a sample (click to run):</p>
+    <div>
+      <img src="/samples/621.png" class="sample" width="150">
+      <img src="/samples/630.png" class="sample" width="150">
+      <img src="/samples/645.png" class="sample" width="150">
+    </div>
+
+    <p id="status"></p>
+    <p>Vertical CDR: <span id="cdrValue"></span></p>
+    <img id="overlay" width="300">
+
+    <script>
+      // JavaScript goes here
+      
+      const fileInput = document.getElementById("fileInput");
+      const status = document.getElementById("status");
+      const button = document.getElementById("predictBtn");
+      const cdrValue = document.getElementById("cdrValue");
+      const overlay =document.getElementById("overlay");
+      
+      async function runPrediction(file, name) {
+        status.textContent = "Running model. The first request after the server has been idle can take ~20-30 seconds." ;
+        
+        const fd = new FormData();
+        fd.append("file", file);  // "file" is needed to match async def predict(file: UploadFile) in the "/predict" endpoint so FastAPI can parse it in
+
+        const res = await fetch("/predict", { method: "POST", body: fd });
+        
+        if (!res.ok){ //res.ok is true for status codes 2xx and false for everything else
+            const err = await res.json();
+            status.textContent = "Error: " + err.detail;
+            return;
+        }
+
+        const data = await res.json();
+
+        cdrValue.textContent = data.vertical_cdr.toFixed(2);
+        overlay.src = "data:image/png;base64," + data.overlay_png;
+        status.textContent = "Done. Prediction displayed for " + name;
+      
+      }
+
+
+      button.addEventListener("click", async function () {
+        // house-keeping
+        cdrValue.textContent = "";
+        overlay.src = "";
+
+
+        const file = fileInput.files[0];
+        if (!file){
+            status.textContent = "Please upload a file or choose a sample.";
+            return;
+        }
+
+        runPrediction(file,file.name);
+
+        });
+
+        document.querySelectorAll(".sample").forEach(function (img) {
+            img.addEventListener("click", async function () {
+                // house-keeping
+                cdrValue.textContent = "";
+                overlay.src = "";
+                const blob = await (await fetch(img.src)).blob();
+                const name = img.src.split("/").pop() + " (sample)";
+                runPrediction(blob, name);
+            });
+        });
+      
+    </script>
+  </body>
+</html>

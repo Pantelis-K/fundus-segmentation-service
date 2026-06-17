@@ -15,7 +15,7 @@ def fake_load_models(*args): #accepts all the args but just ignores them
 
 def test_health_check(): 
     client = TestClient(app) #plain mode (still routes requests fine, lifespan never runs though so it can't test anything that needs app.state)
-    response = client.get("/")
+    response = client.get("/health")
     assert response.status_code == 200
     assert response.json() == {"status":"ok"}
 

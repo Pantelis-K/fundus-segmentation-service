@@ -1,6 +1,8 @@
 from fastapi import FastAPI #to declare endpoints, while handling routing/validation automatically
 from fastapi import UploadFile #custom class to help /docs generate an "Upload File" button automatically
 from fastapi import HTTPException #for handling a "None" result from ellipse fitting logic
+from fastapi.responses import FileResponse #to use instead of the default JSONResponse - needed for the static form in the demo
+from fastapi.staticfiles import StaticFiles #to serve the whole folder of sample images by URL
 import predict as run_predict #import model and inference logic (with ellipse fitting)
 from contextlib import asynccontextmanager #to create variables in shared state accessible across requests
 from pydantic import BaseModel #to define complex return type of the route (helps with /docs and output validation)
@@ -23,10 +25,11 @@ async def lifespan(app: FastAPI):
     
 
 app = FastAPI(lifespan=lifespan)
+app.mount("/samples", StaticFiles(directory="samples"), name="samples")
 
 
-@app.get("/")
-def root():
+@app.get("/health")
+def health():
     return {"status":"ok"}
 
 @app.post("/predict", response_model=PredictResponse)
@@ -43,5 +46,7 @@ async def predict(file: UploadFile):
     overlay = base64.b64encode(png_bytes).decode("ascii")
     return PredictResponse(vertical_cdr=vcdr, overlay_png=overlay)
 
-
+@app.get("/")
+def form():
+    return FileResponse("index.html")
 
