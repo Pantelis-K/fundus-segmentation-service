@@ -32,7 +32,10 @@ def root():
 @app.post("/predict", response_model=PredictResponse)
 async def predict(file: UploadFile):
     image_bytes = await file.read()
-    result = run_predict.predict(image_bytes,app.state.disc_model,app.state.cup_model)
+    try:
+        result = run_predict.predict(image_bytes,app.state.disc_model,app.state.cup_model)
+    except ValueError:
+        raise HTTPException(status_code=422, detail="Could not parse input image - ensure the uploaded file is an ROI-cropped fundus image.")
     vcdr = result["vertical_cdr"]
     if vcdr is None:
         raise HTTPException(status_code=422, detail="Could not locate a disc/cup - ensure the uploaded file is an ROI-cropped fundus image.")
