@@ -52,7 +52,7 @@ fundus image containing the optic nerve head, it:
 ## Try it
 
 **In the browser:** open the [live demo](https://fundus-segmentation-service-168745042593.europe-west1.run.app),
-then either upload your own ROI-cropped fundus image or click one of the three sample
+then either upload your own ROI-cropped fundus image or click one of the sample
 crops to run them.
 
 **From the command line:** from the repo root of a local clone (the sample crops live
@@ -71,7 +71,7 @@ The response looks like:
 { "vertical_cdr": 0.73, "overlay_png": "<base64-encoded PNG>" }
 ```
 
-Sample inputs ship in [`samples/`](samples) (IDs 621, 630, 645 - 640×640 crops). As a
+Sample inputs ship in [`samples/`](samples) (IDs 621, 630, 634, 645, 648, 650  - 640×640 crops). As a
 sanity check, 621 predicts a vCDR of roughly **0.73**.
 
 ---
