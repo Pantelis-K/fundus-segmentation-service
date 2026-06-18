@@ -31,7 +31,7 @@ def test_predict_endpoint_returns_200_and_cdr(monkeypatch):
         response = client.post("/predict",files={"file": ("test.png",b"somebytes","image/png")})
         assert response.status_code == 200
         assert response.json()["vertical_cdr"] == 0.5
-        assert base64.b64decode(response.json()["overlay_png"]) == b"...somebytes..."      # truthy = non-empty string
+        assert base64.b64decode(response.json()["overlay_png"]) == b"...somebytes..."
     
 def test_predict_endpoint_invalid_returns_422(monkeypatch):
     monkeypatch.setattr(predict, "load_models",fake_load_models)

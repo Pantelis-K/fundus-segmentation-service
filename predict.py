@@ -57,12 +57,14 @@ def _fit_ellipse_params(mask: np.ndarray):
 
 def _vertical_cdr(disc: np.ndarray, cup: np.ndarray) -> float | None:
     """
-    Compute CDR metrics from ellipses fitted to the disc and cup masks.
+    Compute the vertical cup-to-disc ratio from ellipses fitted to the
+    disc and cup masks.
 
     More robust than pixel-based CDR for noisy or irregular prediction masks,
     because the ellipse acts as a smooth regulariser over the raw segmentation.
 
-    Returns area_cdr, vertical_cdr, horizontal_cdr (None if ellipse fitting fails).
+    Returns the vertical CDR as a float, or None if either ellipse fit fails
+    or the disc has zero vertical extent.
     """
     d_p = _fit_ellipse_params(disc)
     c_p = _fit_ellipse_params(cup)
